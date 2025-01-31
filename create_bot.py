@@ -7,11 +7,11 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from db_handler.db_sqlite import DBSqlite
 from decouple import config
-
+from states.state_manager import StateManager
 
 db = DBSqlite()
-api_service = APIService()
-user_sessions = {}
+api_service = APIService(db)
+state_manager = StateManager()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 

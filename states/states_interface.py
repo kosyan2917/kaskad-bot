@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from aiogram.types import Message
 
 class State:
-
-    pass
+    @abstractmethod
+    async def on_enter(self, message: Message) -> None:
+        pass

@@ -1,25 +1,16 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from handlers.states import UserStates
-from create_bot import db, api_service, user_sessions
+from states.fsms import LoginStates
+from create_bot import db, api_service, state_manager
+from middlewares.state_middleware import StateMiddleware
 
 start_router = Router()
+start_router.message.outer_middleware(StateMiddleware())
 
 @start_router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext) -> None:
     await state.clear()
-    await state.set_state(UserStates.login)
-    await message.answer('Для начала необходимо настроить вашу учетную запись для дальнейшей работы. Введите логин от вашей учетной записи automarshal.')
-
-@start_router.message(StateFilter(None))
-async def handle_stateless(message: Message, state: FSMContext) -> None:
-    if db.check_user(message.from_user.id):
-        session = api_service.get_session(*db.get_login_data(message.from_user.id))
-        user_sessions[message.from_user.id] = session
-        await message.answer("Сделай вид, что я тебе отправил клавиатуру")
-        await state.set_state(UserStates.main)
-    else:
-        await message.answer("Ваш пользователь не найден в базе. Пожалуйста, введите логин от вашей учетной записи Automarshal")
-        await state.set_state(UserStates.login)
+    await state.set_state(LoginStates.login)
+    await state_manager.set_state(message.from_user.id, state_manager.unauthorized, message)

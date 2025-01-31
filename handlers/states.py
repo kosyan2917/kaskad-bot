@@ -1,5 +1,4 @@
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import Message
 
 
 class UserStates(StatesGroup):
@@ -13,5 +12,3 @@ class UserStates(StatesGroup):
     taxi_image = State()
     redact_taxi_number = State()
 
-    async def on_enter_main(self, message: Message) -> None:
-        await message.answer("Aboba")
